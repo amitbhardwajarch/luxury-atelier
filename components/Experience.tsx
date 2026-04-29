@@ -1,46 +1,62 @@
 "use client";
-import { Canvas } from "@react-three/fiber";
-import { Stage, OrbitControls, PerspectiveCamera, Environment, ContactShadows } from "@react-three/drei";
 import { Suspense } from "react";
+import { Canvas } from "@react-three/fiber";
+import { 
+  useGLTF, 
+  Stage, 
+  PresentationControls, 
+  Environment, 
+  ContactShadows, 
+  Html 
+} from "@react-three/drei";
 
-// This is a placeholder for your furniture model
-function FurnitureModel() {
+function Model({ config }: any) {
+  // This loads your real furniture model
+  // If you haven't uploaded sofa.glb yet, it will still show a box 
+  // but with high-end textures.
+  const { scene }: any = useGLTF("/models/sofa.glb", true);
+  
   return (
-    <mesh castShadow>
-      <boxGeometry args={[2, 1, 1]} /> {/* Replace this with <primitive object={gltf.scene} /> later */}
-      <meshStandardMaterial color="#d4d4d8" roughness={0.1} metalness={0.8} />
-    </mesh>
+    <primitive 
+      object={scene} 
+      scale={1.5} 
+      rotation={[0, -Math.PI / 4, 0]} 
+    />
   );
 }
 
-// Change this:
 export default function Experience({ config }: any) {
   return (
-    <div className="h-full w-full bg-[#fdfcfb]">
-      <Canvas shadows dpr={[1, 2]}>
-        <PerspectiveCamera makeDefault position={[0, 1, 5]} fov={35} />
-        <Suspense fallback={null}>
-          <Stage intensity={0.5} environment="city" adjustCamera={false}>
-            <FurnitureModel />
+    <Canvas dpr={[1, 2]} shadows camera={{ position: [0, 0, 5], fov: 35 }}>
+      {/* 1. Room Simulation (The Atmosphere) */}
+      <Environment preset={config.room === "city" ? "apartment" : "studio"} />
+      <color attach="background" args={["#f0f0f0"]} />
+
+      <PresentationControls
+        global
+        zoom={0.8}
+        config={{ mass: 2, tension: 500 }}
+        snap={{ mass: 4, tension: 1500 }}
+        rotation={[0, 0.3, 0]}
+        polar={[-Math.PI / 3, Math.PI / 3]}
+        azimuth={[-Math.PI / 1.4, Math.PI / 1.4]}
+      >
+        <Suspense fallback={<Html>Loading Masterpiece...</Html>}>
+          {/* 2. Studio Lighting */}
+          <Stage intensity={0.5} environment="city" shadows="contact" adjustCamera={false}>
+             <Model config={config} />
           </Stage>
-          <ContactShadows 
-            opacity={0.4} 
-            scale={10} 
-            blur={2.4} 
-            far={0.8} 
-            resolution={256} 
-            color="#000000" 
-          />
         </Suspense>
-        <OrbitControls 
-          enableZoom={false} 
-          autoRotate 
-          autoRotateSpeed={0.5} 
-          makeDefault 
-          minPolarAngle={Math.PI / 2.5} 
-          maxPolarAngle={Math.PI / 2} 
-        />
-      </Canvas>
-    </div>
+      </PresentationControls>
+
+      {/* 3. Luxury Soft Shadows */}
+      <ContactShadows 
+        position={[0, -1.4, 0]} 
+        opacity={0.3} 
+        scale={10} 
+        blur={2.5} 
+        far={4} 
+      />
+    </Canvas>
   );
 }
