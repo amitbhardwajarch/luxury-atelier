@@ -1,12 +1,12 @@
 "use client";
 import { Suspense, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
-import { useGLTF, Stage, OrbitControls, Environment, ContactShadows, MeshReflectorMaterial, Html, useProgress } from "@react-three/drei";
+import { useGLTF, Stage, OrbitControls, Environment, ContactShadows, MeshReflectorMaterial } from "@react-three/drei";
 import * as THREE from "three";
 
 function Model({ config }: any) {
-  // Path points to your public/models folder
-  const { scene } = useGLTF(`/models/${config.item}.glb`);
+  // Points exactly to your 6MB file
+  const { scene } = useGLTF("/models/modern_table.glb");
 
   useEffect(() => {
     if (scene) {
@@ -15,7 +15,7 @@ function Model({ config }: any) {
           child.castShadow = true;
           child.receiveShadow = true;
           if (child.material) {
-            // Apply the UI color to the model
+            // This allows the color buttons to work on the table top
             child.material.color = new THREE.Color(config.fabric);
           }
         }
@@ -23,53 +23,44 @@ function Model({ config }: any) {
     }
   }, [scene, config.fabric]);
 
-  return <primitive object={scene} scale={1.5} position={[0, -0.5, 0]} />;
-}
-
-// Custom Loader for big files like the 45MB Bed
-function Loader() {
-  const { progress } = useProgress();
-  return (
-    <Html center>
-      <div className="flex flex-col items-center bg-white/80 p-10 rounded-full backdrop-blur-md shadow-2xl">
-        <div className="text-[10px] uppercase tracking-[0.5em] font-bold mb-2">Downloading Luxury</div>
-        <div className="w-24 h-[2px] bg-black/10">
-          <div className="h-full bg-black transition-all duration-300" style={{ width: `${progress}%` }} />
-        </div>
-        <div className="mt-2 text-[8px] font-mono">{Math.round(progress)}%</div>
-      </div>
-    </Html>
-  );
+  // Adjusted scale for a table (tables usually look better slightly smaller in 3D space)
+  return <primitive object={scene} scale={1.2} position={[0, -0.2, 0]} />;
 }
 
 export default function Experience({ config }: any) {
   return (
     <div className="w-full h-full">
-      <Canvas dpr={[1, 2]} shadows camera={{ position: [5, 2, 5], fov: 35 }}>
-        <Suspense fallback={<Loader />}>
+      <Canvas dpr={[1, 2]} shadows camera={{ position: [4, 2, 4], fov: 35 }}>
+        <Suspense fallback={null}>
           <Stage intensity={0.5} environment={config.room} adjustCamera={false}>
             <Model config={config} />
           </Stage>
 
-          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.05, 0]}>
+          {/* The Luxury Showroom Floor */}
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.65, 0]}>
             <planeGeometry args={[50, 50]} />
             <MeshReflectorMaterial
               blur={[300, 100]}
               resolution={1024}
               mixBlur={1}
-              mixStrength={40}
+              mixStrength={50}
               roughness={1}
               depthScale={1.2}
               minDepthThreshold={0.4}
               maxDepthThreshold={1.4}
-              color="#151515"
+              color="#1a1a1a"
               metalness={0.5}
             />
           </mesh>
           <Environment preset={config.room} />
-          <ContactShadows opacity={0.4} scale={10} blur={2} far={4} />
+          <ContactShadows opacity={0.4} scale={10} blur={2.5} far={4} />
         </Suspense>
-        <OrbitControls enablePan={false} autoRotate />
+        <OrbitControls 
+          enablePan={false} 
+          autoRotate 
+          autoRotateSpeed={0.5}
+          maxPolarAngle={Math.PI / 2.1} // Prevents looking under the floor
+        />
       </Canvas>
     </div>
   );
