@@ -1,8 +1,8 @@
 "use client";
 import { useState, Suspense } from "react";
-import Experience from "@/components/Experience";
-import Overlay from "@/components/Overlay";
-import LoadingScreen from "@/components/LoadingScreen";
+import Experience from "../components/Experience";
+import Overlay from "../components/Overlay";
+import LoadingScreen from "../components/LoadingScreen";
 
 export default function Home() {
   const [config, setConfig] = useState({ fabric: "#d4d4d8", room: "city" });
