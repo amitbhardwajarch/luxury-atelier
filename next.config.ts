@@ -1,15 +1,8 @@
-/** @type {import('next').Next.jsConfig} */
-const nextConfig = {
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
   typescript: {
-    // !! WARN !!
-    // Dangerously allow production builds to successfully complete even if
-    // your project has type errors.
-    // !! WARN !!
     ignoreBuildErrors: true,
-  },
-  eslint: {
-    // Also ignore eslint errors during builds
-    ignoreDuringBuilds: true,
   },
 };
 
