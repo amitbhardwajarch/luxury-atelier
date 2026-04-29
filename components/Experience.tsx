@@ -13,7 +13,8 @@ function FurnitureModel() {
   );
 }
 
-export default function Experience() {
+// Change this:
+export default function Experience({ config }: any) {
   return (
     <div className="h-full w-full bg-[#fdfcfb]">
       <Canvas shadows dpr={[1, 2]}>
