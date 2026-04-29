@@ -1,61 +1,54 @@
 "use client";
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 export default function Overlay({ config, setConfig, price }: any) {
-  const [showForm, setShowForm] = useState(false);
+  const finishes = [
+    { name: "Ivory Bouclé", color: "#f3f4f6" },
+    { name: "Obsidian Leather", color: "#171717" },
+    { name: "Cognac Velvet", color: "#7c2d12" },
+  ];
 
   return (
-    <>
-      {/* HUD UI */}
-      <div className="fixed inset-0 pointer-events-none z-10 flex flex-col justify-between p-12">
-        <header className="flex justify-between items-start pointer-events-auto">
-          <div>
-            <h2 className="text-3xl font-serif italic text-white mix-blend-difference">The Zenith Sofa</h2>
-            <p className="text-[10px] uppercase tracking-widest text-gray-500">Collection 2025</p>
-          </div>
-          <div className="text-right">
-             <p className="text-2xl font-serif text-white mix-blend-difference">${price.toLocaleString()}</p>
-             <button onClick={() => setShowForm(true)} className="mt-4 px-8 py-3 bg-white text-black text-[10px] uppercase tracking-widest hover:invert transition-all rounded-full pointer-events-auto">
-               Request Bespoke Quote
-             </button>
-          </div>
-        </header>
-
-        <footer className="flex justify-between items-end pointer-events-auto">
-          <div className="space-y-6">
-            <div>
-              <p className="text-[9px] uppercase tracking-widest text-gray-500 mb-2">Select Finish</p>
-              <div className="flex gap-4">
-                {["#d4d4d8", "#262626", "#451a03"].map(c => (
-                  <button key={c} onClick={() => setConfig({...config, fabric: c})} style={{backgroundColor: c}} className="w-8 h-8 rounded-full border border-white/20" />
-                ))}
-              </div>
-            </div>
-          </div>
-        </footer>
+    <div className="fixed inset-0 pointer-events-none z-10 p-12 flex flex-col justify-between">
+      <div className="flex justify-between items-start pointer-events-auto">
+        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+          <h1 className="text-6xl font-serif tracking-tighter text-black">Atelier Zenith</h1>
+          <p className="text-[10px] uppercase tracking-[0.6em] text-gray-400 font-bold ml-1">Bespoke Italian Craft</p>
+        </motion.div>
+        
+        <div className="text-right pointer-events-auto">
+          <p className="text-3xl font-serif">${price.toLocaleString()}</p>
+          <button className="mt-4 px-10 py-4 bg-black text-white text-[10px] uppercase tracking-[0.3em] rounded-full hover:scale-105 transition-transform shadow-2xl">
+            Order Commission
+          </button>
+        </div>
       </div>
 
-      {/* MODAL FORM */}
-      <AnimatePresence>
-        {showForm && (
-          <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-xl flex items-center justify-center p-6"
-          >
-            <motion.div initial={{ y: 50 }} animate={{ y: 0 }} className="max-w-md w-full bg-white p-12 rounded-3xl">
-              <button onClick={() => setShowForm(false)} className="float-right text-xs uppercase tracking-widest">Close</button>
-              <h3 className="text-3xl font-serif mb-8">Bespoke Inquiry</h3>
-              <form className="space-y-6">
-                <input type="text" placeholder="FULL NAME" className="w-full border-b border-black/10 py-4 text-xs tracking-widest focus:outline-none focus:border-black" />
-                <input type="email" placeholder="EMAIL ADDRESS" className="w-full border-b border-black/10 py-4 text-xs tracking-widest focus:outline-none focus:border-black" />
-                <textarea placeholder="SPECIAL REQUIREMENTS" className="w-full border-b border-black/10 py-4 text-xs tracking-widest h-24 focus:outline-none focus:border-black" />
-                <button className="w-full bg-black text-white py-6 text-[10px] uppercase tracking-widest">Send Request</button>
-              </form>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+      <div className="flex justify-between items-end pointer-events-auto">
+        <div className="bg-white/80 backdrop-blur-2xl p-10 rounded-[40px] shadow-2xl border border-white/50">
+          <p className="text-[10px] uppercase tracking-[0.4em] text-gray-400 mb-6 font-bold">Configure Surface</p>
+          <div className="flex gap-8">
+            {finishes.map((f) => (
+              <button
+                key={f.name}
+                onClick={() => setConfig({ ...config, fabric: f.color })}
+                className="group flex flex-col items-center gap-3"
+              >
+                <div 
+                  className={`w-12 h-12 rounded-full border-2 transition-all duration-500 ${config.fabric === f.color ? 'border-black scale-125' : 'border-transparent'}`}
+                  style={{ backgroundColor: f.color }}
+                />
+                <span className="text-[8px] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">{f.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="text-[9px] uppercase tracking-[0.5em] text-gray-400 max-w-[200px] leading-relaxed text-right">
+          Interactive Simulation v1.0 <br />
+          360° Studio View Enabled
+        </div>
+      </div>
+    </div>
   );
 }
